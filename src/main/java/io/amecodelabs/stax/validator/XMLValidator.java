@@ -4,9 +4,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import io.amecodelabs.stax.validator.errorhandler.XMLError;
-import io.amecodelabs.stax.validator.errorhandler.XMLFatalError;
-import io.amecodelabs.stax.validator.errorhandler.XMLWarning;
+import io.amecodelabs.stax.validator.errorhandler.XMLValidationError;
+import io.amecodelabs.stax.validator.errorhandler.XMLValidationFatalError;
+import io.amecodelabs.stax.validator.errorhandler.XMLValidationWarning;
 
 public class XMLValidator {
 	private static XMLValidator xmlValidator;
@@ -27,17 +27,17 @@ public class XMLValidator {
 		this.xmlSchemaValidator = xmlSchemaValidator;
 	}
 	
-	public void setErrorHandler(XMLError xmlError, XMLWarning xmlWarning, XMLFatalError xmlFatalError) {
+	public void setErrorHandler(XMLValidationError xmlError, XMLValidationWarning xmlWarning, XMLValidationFatalError xmlFatalError) {
 		this.errorHandle = new ErrorHandler() {
 			@Override
 			public void warning(SAXParseException exception) throws SAXException {
-				if(xmlError != null)
-					xmlError.accept(exception);
+				if(xmlWarning != null)
+					xmlWarning.accept(exception);
 			}
 			@Override
 			public void error(SAXParseException exception) throws SAXException {
-				if(xmlWarning != null)
-					xmlWarning.accept(exception);
+				if(xmlError != null)
+					xmlError.accept(exception);
 			}
 			@Override
 			public void fatalError(SAXParseException exception) throws SAXException {

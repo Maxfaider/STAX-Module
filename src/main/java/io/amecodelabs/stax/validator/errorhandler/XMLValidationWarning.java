@@ -4,6 +4,6 @@ import java.util.function.Consumer;
 
 import org.xml.sax.SAXParseException;
 
-public interface XMLWarning extends Consumer<SAXParseException> {
+public interface XMLValidationWarning extends Consumer<SAXParseException> {
 
 }
