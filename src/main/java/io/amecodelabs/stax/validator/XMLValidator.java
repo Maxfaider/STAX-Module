@@ -47,9 +47,9 @@ public class XMLValidator {
 		};
 	}
 	
-	public boolean validate(String schemaContent, String xmlContent) {
+	public boolean validate(String schemaFile, String xmlFile) {
 		this.xmlSchemaValidator.setErrorHandler(this.errorHandle);
-		return this.xmlSchemaValidator.validate(schemaContent, xmlContent);
+		return this.xmlSchemaValidator.validate(schemaFile, xmlFile);
 	}
 
 }

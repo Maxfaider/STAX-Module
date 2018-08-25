@@ -4,5 +4,5 @@ import org.xml.sax.ErrorHandler;
 
 public interface XMLSchemaValidator {
 	void setErrorHandler(ErrorHandler errorHandler);
-	boolean validate(String schemaContent, String XMLContent);
+	boolean validate(String schemaFile, String XMLFile);
 }
