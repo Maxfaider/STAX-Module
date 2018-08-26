@@ -11,4 +11,9 @@ public interface XMLSchemaValidatorFactory {
 		}
 	}
 	
+	public static XMLSchemaValidatorFactory newInstance() {
+		return new XMLSchemaValidatorFactory() {
+		};
+	}
+	
 }

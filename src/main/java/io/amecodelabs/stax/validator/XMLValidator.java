@@ -9,21 +9,18 @@ import io.amecodelabs.stax.validator.errorhandler.XMLValidationFatalError;
 import io.amecodelabs.stax.validator.errorhandler.XMLValidationWarning;
 
 public class XMLValidator {
-	private static XMLValidator xmlValidator;
 	private XMLSchemaValidator xmlSchemaValidator;
 	private ErrorHandler errorHandle;
 	
-	private XMLValidator() {
-		
+	private XMLValidator(XMLSchemaValidator xmlSchemaValidator) {
+		this.xmlSchemaValidator = xmlSchemaValidator;
 	}
 	
-	public static XMLValidator getInstance() {
-		if(xmlValidator == null)
-			return xmlValidator = new XMLValidator();
-		return xmlValidator;
+	public static XMLValidator newInstance(XMLSchemaValidator xmlSchemaValidator) {
+		return new XMLValidator(xmlSchemaValidator);
 	}
 	
-	public void setContextSchema(XMLSchemaValidator xmlSchemaValidator) {
+	public void setContextScheme(XMLSchemaValidator xmlSchemaValidator) {
 		this.xmlSchemaValidator = xmlSchemaValidator;
 	}
 	
