@@ -1,23 +1,57 @@
 package io.amecodelabs.stax.validator;
 
 import java.io.File;
+import java.io.IOException;
 
-import io.amecodelabs.stax.validator.internalerrorhandler.XMLError;
-import io.amecodelabs.stax.validator.internalerrorhandler.XMLFatalError;
-import io.amecodelabs.stax.validator.internalerrorhandler.XMLWarning;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-public class DTDValidatorAdapter implements XMLSchemaValidator {
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
-	@Override
-	public void setInternalErrorHandler(XMLError xmlError, XMLWarning xmlWarning, XMLFatalError xmlFatalError) {
-		// TODO Auto-generated method stub
+public class DTDValidatorAdapter extends XMLSchemaValidator {
+	
+	DTDValidatorAdapter() {
 		
 	}
 
 	@Override
 	public boolean validate(File schemaFile, File xmlFile) throws XMLSchemaException {
-		// TODO Auto-generated method stub
-		return false;
+		this.is_valid_document_xml(true);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setValidating(true);
+		factory.setNamespaceAware(true);
+		try {
+			SAXParser parser = factory.newSAXParser();
+			XMLReader reader = parser.getXMLReader();
+			reader.setErrorHandler(new ErrorHandler() {
+				@Override
+				public void warning(SAXParseException exception) throws SAXException {
+					if (getXmlWarning() != null)
+						getXmlWarning().accept(exception);
+				}
+				@Override
+				public void fatalError(SAXParseException exception) throws SAXException {
+					if (getXmlFatalError() != null)
+						getXmlFatalError().accept(exception);
+					markDocumentError();
+				}
+				@Override
+				public void error(SAXParseException exception) throws SAXException {
+					if (getXmlError() != null)
+						getXmlError().accept(exception);
+					markDocumentError();
+				}
+			});
+			reader.parse(new InputSource(xmlFile.getAbsolutePath()));
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			throw new XMLSchemaException(e.getMessage());
+		} 
+		return this.is_valid_document_xml();
 	}
 	
 }

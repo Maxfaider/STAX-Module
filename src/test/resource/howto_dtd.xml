@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE howto [
+<!ELEMENT howto (topic*)>
+<!ELEMENT topic (title,url)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT url (#PCDATA)>
+]>
+<howto>
+  <topic>
+      <title>Java</title>
+      <url>http://www.rgagnon.com/topics/java-xml.html</url>
+  </topic>
+</howto>
