@@ -1,7 +1,6 @@
 package io.amecodelabs.stax.validator;
 
 public enum XMLSchema {
-	
 	DTD ("Document_Type_Definition"),
 	XSD ("XML_Schema_Definition");
 	
@@ -14,5 +13,4 @@ public enum XMLSchema {
 	public String getNameSchema() {
 		return nameSchema;
 	}
-
 }

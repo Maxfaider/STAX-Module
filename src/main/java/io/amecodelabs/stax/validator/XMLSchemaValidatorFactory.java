@@ -5,15 +5,14 @@ public interface XMLSchemaValidatorFactory {
 	default XMLSchemaValidator getXMLSchemaValidator(XMLSchema xmlSchema) {
 		switch(xmlSchema) {
 			case DTD: 
-				return new DTDValidator();
+				return new DTDValidatorAdapter();
 			default:
-				return new XSDValidator();
+				return new XSDValidatorAdapter();
 		}
 	}
 	
 	public static XMLSchemaValidatorFactory newInstance() {
-		return new XMLSchemaValidatorFactory() {
-		};
+		return new XMLSchemaValidatorFactory() {};
 	}
 	
 }
