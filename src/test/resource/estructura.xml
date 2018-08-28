@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="estructura.xsl"?>
+<packect p_name="paquete ejemplo" p_id="1">
+<graph type="class-diagram">
+	<class c_name="ClaseA" c_id="clase1" c_abstract="false">
+		<attributes>
+			<attribute a_type="string" a_static="yes" a_value="Edgar" a_access="private" a_name="name" a_id="a1"></attribute>
+			<attribute a_type="ClaseB" a_static="not" a_value="" a_access="private" a_name="instance" a_id="a2"></attribute>
+		</attributes>
+		<methods>
+			<method m_name="getName" m_return="string" m_access="public"></method>
+			<method m_name="setName" m_return="void" m_access="public">
+				<parameters>
+					<parameter pr_type="string" pr_name="name"></parameter>
+				</parameters>
+			</method>
+		</methods>
+	
+        <relations>
+        <relation r_type="composite" r_from="ClaseA" r_to="ClaseB" r_id="r1" r_id_from="clase1" r_id_to="clase3"></relation>
+        </relations>
+        </class>
+	<class c_name="ClaseB" c_id="clase3" c_abstract="false">
+		<attributes></attributes>
+		<methods></methods>
+	
+        <relations>
+        <relation r_type="generalization" r_from="ClaseB" r_to="ClasePadre" r_id="r2" r_id_from="clase2" r_id_to="clase3"></relation>
+        </relations>
+        </class>
+	<class c_name="ClasePadre" c_abstract="yes" c_id="clase2">
+		<attributes></attributes>
+		<methods></methods>
+	</class>
+
+	<interface c_name="interfaz" c_abstract="no" c_id="interfaz1">
+		<attributes></attributes>
+		<methods></methods>
+	</interface>
+
+	
+	
+</graph>
+</packect>

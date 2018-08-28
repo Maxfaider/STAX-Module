@@ -1,45 +1,31 @@
 package io.amecodelabs.stax.xsltransformation;
 
+import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.TransformerException;
-
-import io.amecodelabs.stax.xsltransformation.errorhandler.XMLTransformationError;
-import io.amecodelabs.stax.xsltransformation.errorhandler.XMLTransformationFatalError;
-import io.amecodelabs.stax.xsltransformation.errorhandler.XMLTransformationWarning;
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationError;
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationFatalError;
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationWarning;
 
 public class XMLMappingBuilder {
 	private String xmlFileDestination;
-	private String xslFile;
+	private File xslFile;
 	private Hashtable<String, String> propertiesFromMemory;
 	private Properties propertiesFromFile;
-	private ErrorListener errorListener;
+	private XMLTransformationError xmlTransformationError; 
+	private XMLTransformationWarning xmlTransformationWarning; 
+	private XMLTransformationFatalError xmlTransformationFatalError;
 	
-	public XMLMappingBuilder(String xslFile) {
+	public XMLMappingBuilder(File xslFile) {
 		this.xslFile = xslFile;
 	}
 	
-	public XMLMappingBuilder setErrorHandler(XMLTransformationError xmlTransformationError, 
+	public XMLMappingBuilder setInternalErrorHandler(XMLTransformationError xmlTransformationError, 
 			XMLTransformationWarning xmlTransformationWarning, XMLTransformationFatalError xmlTransformationFatalError) {
-		this.errorListener = new ErrorListener() {
-			@Override
-			public void warning(TransformerException exception) throws TransformerException {
-				if(xmlTransformationWarning != null)
-					xmlTransformationWarning.accept(exception);
-			}
-			@Override
-			public void error(TransformerException exception) throws TransformerException {
-				if(xmlTransformationError != null)
-					xmlTransformationError.accept(exception);
-			}
-			@Override
-			public void fatalError(TransformerException exception) throws TransformerException {
-				if(xmlTransformationFatalError != null)
-					xmlTransformationFatalError.accept(exception);
-			}
-		};
+		this.xmlTransformationError = xmlTransformationError;
+		this.xmlTransformationWarning = xmlTransformationWarning;
+		this.xmlTransformationFatalError = xmlTransformationFatalError;
 		return this;
 	}
 	
@@ -61,16 +47,10 @@ public class XMLMappingBuilder {
 	
 	public XMLMapping build() {
 		XMLMappingImpl xmlMappingImpl = new XMLMappingImpl(xslFile);
-		
-		if(this.errorListener != null)
-			xmlMappingImpl.setErrorListener(this.errorListener);
-		if(this.propertiesFromFile != null)
-			xmlMappingImpl.setPropertiesFromFile(this.propertiesFromFile);
-		if(this.propertiesFromMemory != null)
-			xmlMappingImpl.setPropertiesFromMemory(this.propertiesFromMemory);
-		if(this.xmlFileDestination != null)
-			xmlMappingImpl.setXmlFileDestination(this.xmlFileDestination);
-		
+		xmlMappingImpl.setInternalErrorHandler(xmlTransformationError, xmlTransformationWarning, xmlTransformationFatalError);
+		xmlMappingImpl.setPropertiesFromFile(this.propertiesFromFile);
+		xmlMappingImpl.setPropertiesFromMemory(this.propertiesFromMemory);
+		xmlMappingImpl.setXmlFileDestination(this.xmlFileDestination);
 		return xmlMappingImpl;
 	}
 }

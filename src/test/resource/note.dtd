@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT note (title,message+,date*)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT message (#PCDATA)>
+<!ELEMENT date (#PCDATA)>
+<!ATTLIST message
+	type (head | data) #REQUIRED
+	lang CDATA #IMPLIED
+>

@@ -1,7 +1,7 @@
 package io.amecodelabs.stax.xsltransformation;
 
+import java.io.File;
+
 public interface XMLMapping {
-	
-	void transform(String xmlFile);
-	
+	void transform(File xmlFile) throws XMLMappingException;
 }

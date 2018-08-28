@@ -1,9 +1,10 @@
 package io.amecodelabs.stax.test;
 
 import io.amecodelabs.stax.validator.XMLSchemaException;
+import io.amecodelabs.stax.xsltransformation.XMLMappingException;
 
-public abstract class TestSTAX {
-
+public class TestSTAX {
+	
 	public static void main(String[] args) {
 		//Validate XSD
 		try {
@@ -26,6 +27,15 @@ public abstract class TestSTAX {
 		} catch (XMLSchemaException e) {
 			System.out.println(e.getMessage());
 		}
+		
+		// Mapping XML to XMI/
+		try {
+			TestXSLTransformation.transformXML(
+					ClassLoader.getSystemResource("estructura.xsl").getFile(),
+					ClassLoader.getSystemResource("estructura.xml").getFile()
+			);
+		} catch (XMLMappingException e) {
+			e.printStackTrace();
+		}
 	}
-
 }

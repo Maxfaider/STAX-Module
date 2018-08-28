@@ -1,4 +1,4 @@
-package io.amecodelabs.stax.xsltransformation.errorhandler;
+package io.amecodelabs.stax.xsltransformation.internalerrorhandler;
 
 import java.util.function.Consumer;
 

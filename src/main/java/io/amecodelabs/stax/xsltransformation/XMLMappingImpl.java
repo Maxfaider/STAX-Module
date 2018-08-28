@@ -1,27 +1,30 @@
 package io.amecodelabs.stax.xsltransformation;
 
+import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-class XMLMappingImpl implements XMLMapping {
-	private String xmlFileDestination = "./";
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationError;
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationFatalError;
+import io.amecodelabs.stax.xsltransformation.internalerrorhandler.XMLTransformationWarning;
+
+public class XMLMappingImpl implements XMLMapping {
+	private String xmlFileDestination;
 	StreamSource xslStream;
-	
 	private ErrorListener errorListener;
 	private Hashtable<String, String> propertiesFromMemory;
 	private Properties propertiesFromFile;
 	
-	protected XMLMappingImpl(String xslFile) {
-		xslStream = new StreamSource(xslFile);
+	XMLMappingImpl(File xslFile) {
+		this.errorListener = new DefaultErrorListener();
+		this.xslStream = new StreamSource(xslFile);
 	}
 	
 	public void setXmlFileDestination(String xmlFileDestination) {
@@ -36,41 +39,49 @@ class XMLMappingImpl implements XMLMapping {
 		this.propertiesFromMemory = propertiesFromMemory;
 	}
 	
-	public void setErrorListener(ErrorListener errorListener) {
-		this.errorListener = errorListener;
+	public void setInternalErrorHandler(XMLTransformationError xmlTransformationError, 
+			XMLTransformationWarning xmlTransformationWarning, XMLTransformationFatalError xmlTransformationFatalError) {
+		this.errorListener = new ErrorListener() {
+			@Override
+			public void warning(TransformerException exception) throws TransformerException {
+				if(xmlTransformationWarning != null)
+					xmlTransformationWarning.accept(exception);
+			}
+			@Override
+			public void fatalError(TransformerException exception) throws TransformerException {
+				if(xmlTransformationFatalError != null)
+					xmlTransformationFatalError.accept(exception);
+			}
+			@Override
+			public void error(TransformerException exception) throws TransformerException {
+				if(xmlTransformationError != null)
+					xmlTransformationError.accept(exception);
+			}
+		};
 	}
 	
 	@Override
-	public void transform(String xmlFile) {
-		Transformer transformer;
-        
+	public void transform(File xmlFile) throws XMLMappingException {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		try {
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			transformer = transformerFactory.newTransformer(this.xslStream);
-			
-			Set<String> keys = this.propertiesFromMemory.keySet();
-	        for(String key: keys){
-	            transformer.setOutputProperty(key, this.propertiesFromMemory.get(key));
-	        }
-			transformer.setOutputProperties(this.propertiesFromFile);
-			transformer.setErrorListener(this.errorListener);
-			transformer.transform(
-	        		new StreamSource(xmlFile), 
-	        		new StreamResult(this.xmlFileDestination)
-	        );
-		} catch (TransformerConfigurationException e) {
-			try {
-				errorListener.fatalError(e);
-			} catch (TransformerException e1) {
-				//e1.printStackTrace();
-			}
+			Transformer transformer = transformerFactory.newTransformer(xslStream);
+			this.addPropertiesOptional(transformer);
+			StreamSource inputXML = new StreamSource(xmlFile);
+	        StreamResult outputXML = new StreamResult(this.xmlFileDestination);
+	        transformer.transform(inputXML, outputXML);
 		} catch (TransformerException e) {
-			try {
-				errorListener.fatalError(e);
-			} catch (TransformerException e1) {
-				//e1.printStackTrace();
-			}
+			throw new XMLMappingException(e.getMessage());
 		}
 	}
-
+	
+	private void addPropertiesOptional(Transformer transformer) {
+		if (this.propertiesFromFile != null)
+			transformer.setOutputProperties(this.propertiesFromFile);
+		if (this.propertiesFromMemory != null)
+			this.propertiesFromMemory.forEach((key, value) -> transformer.setOutputProperty(key, value));
+		if (this.errorListener != null)
+			transformer.setErrorListener(this.errorListener);
+		if (this.xmlFileDestination == null)
+			this.xmlFileDestination = "./autogenerate.xmi";
+	}
 }
